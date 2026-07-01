@@ -24,10 +24,22 @@ class Space:
     rent: list[int] | None = None
     color_group: str | None = None
     owner_id: str | None = None
+    houses: int = 0  # Number of houses (0-5)
+    hotel: bool = False  # True if there's a hotel (max level)
 
     def __post_init__(self):
         if self.rent is None:
             self.rent = [0] * 6
+
+
+class HouseLevel(Enum):
+    NONE = 0
+    ONE_HOUSE = 1
+    TWO_HOUSES = 2
+    THREE_HOUSES = 3
+    FOUR_HOUSES = 4
+    FIVE_HOUSES = 5
+    HOTEL = 6
 
 
 class Board:
