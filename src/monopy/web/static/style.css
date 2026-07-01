@@ -58,9 +58,9 @@ body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
+  border-radius: 8px;
   box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
-  padding: 24px;
+  padding: 4px;
   transition: all 0.3s ease;
 }
 
@@ -121,13 +121,13 @@ body {
 .lobby-actions {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
 .action-box {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
 }
 
 .action-box h3 {
@@ -155,7 +155,7 @@ body {
   padding: 14px 16px 14px 48px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 8px;
   color: var(--text-primary);
   font-size: 1rem;
   outline: none;
@@ -188,7 +188,7 @@ body {
 /* Buttons */
 .btn {
   padding: 14px 24px;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -197,7 +197,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   transition: all 0.3s ease;
 }
 
@@ -275,7 +275,7 @@ body {
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .lobby-badge span {
@@ -303,8 +303,8 @@ body {
 .game-layout {
   flex: 1;
   display: grid;
-  grid-template-columns: 280px 1fr 340px;
-  gap: 20px;
+  grid-template-columns: 350px 1fr 350px;
+  gap: 10px;
   padding: 20px;
   height: calc(100vh - 60px);
   overflow: hidden;
@@ -315,12 +315,18 @@ body {
 .game-sidebar-right {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
   height: 100%;
   overflow: hidden;
 }
 
-.trade-card,
+.trades-card {
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .properties-card,
 .sidebar-card,
 .log-card,
@@ -331,8 +337,6 @@ body {
   overflow: hidden;
 }
 
-.trade-card h3,
-.properties-card h3,
 .sidebar-card h3,
 .log-card h3,
 .chat-card h3 {
@@ -342,23 +346,23 @@ body {
   padding-bottom: 8px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .players-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 2px;
   overflow-y: auto;
 }
 
 .player-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 12px;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-color);
   position: relative;
@@ -454,6 +458,77 @@ body {
   font-size: 0.85rem;
 }
 
+/* Properties list styles */
+.properties-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+}
+
+.property-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.property-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.property-item.mine {
+  border-left: 3px solid var(--accent-primary);
+}
+
+.property-item.other {
+  border-left: 3px solid var(--accent-danger);
+}
+
+.property-type {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.property-type.utilities {
+  background: var(--accent-primary);
+  color: #fff;
+}
+
+.property-type.railroad {
+  background: #10b981;
+  color: #fff;
+}
+
+.property-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.property-price {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: #10b981;
+  font-weight: 700;
+}
+
+.property-icon {
+  font-size: 0.75rem;
+}
+
 /* Board Wrapper */
 .board-wrapper {
   display: flex;
@@ -472,11 +547,11 @@ body {
   grid-template-rows: repeat(11, 1fr);
   aspect-ratio: 1 / 1;
   width: 100%;
-  max-width: 680px;
+  max-width: 800px;
   height: auto;
   background-color: #111827;
   border: 3px solid #374151;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
   position: relative;
   padding: 2px;
@@ -492,7 +567,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  padding: 4px;
+  padding: 1px;
   font-size: 0.6rem;
   text-align: center;
   user-select: none;
@@ -517,7 +592,7 @@ body {
 .space-name {
   font-weight: 700;
   color: var(--text-primary);
-  font-size: 0.55rem;
+  font-size: 0.65rem;
   line-height: 1.2;
   word-wrap: break-word;
   display: -webkit-box;
@@ -528,7 +603,7 @@ body {
 
 .space-price {
   color: var(--text-secondary);
-  font-size: 0.5rem;
+  font-size: 0.7rem;
   margin-top: auto;
 }
 
@@ -769,7 +844,7 @@ body {
   max-width: 320px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 14px;
   text-align: center;
   z-index: 1;
@@ -793,7 +868,7 @@ body {
 /* Dice Roller visualizer */
 .dice-container {
   display: flex;
-  gap: 16px;
+  gap: 8px;
   margin-bottom: 24px;
   z-index: 1;
 }
@@ -803,7 +878,7 @@ body {
   height: 50px;
   background: #fff;
   color: #111827;
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -820,7 +895,7 @@ body {
 .center-actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   width: 100%;
   max-width: 240px;
   z-index: 1;
@@ -835,7 +910,7 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   padding-right: 4px;
   font-size: 0.85rem;
 }
@@ -858,7 +933,7 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   padding-right: 4px;
   margin-bottom: 12px;
 }
@@ -900,7 +975,7 @@ body {
 
 .chat-input-area {
   display: flex;
-  gap: 8px;
+  gap: 4px;
 }
 
 .chat-input-area input {
@@ -978,7 +1053,7 @@ body {
 
 .modal-actions {
   display: flex;
-  gap: 12px;
+  gap: 6px;
 }
 
 .modal-actions button {

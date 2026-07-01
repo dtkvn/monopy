@@ -7,7 +7,8 @@ let lastPhase = null;
 let lastDiceRoll = null;
 
 // Player Tokens config
-const TOKENS = ["🎩", "🚗", "🐕", "🚢", "🦖", "💡", "🏎️", "🐈"];
+// const TOKENS = ["🎩", "🚗", "🐕", "🚢", "🦖", "💡", "🏎️", "🐈"];
+const TOKENS = ["🔴", "🟢", "🔵", "🟡", "🟣"]
 
 // DOM Elements
 const screens = {
@@ -33,6 +34,7 @@ const display = {
   lobbyCode: document.getElementById("display-lobby-code"),
   playerCount: document.getElementById("display-player-count"),
   playersList: document.getElementById("players-list"),
+  propertiesContainer: document.getElementById("game-properties"),
   logs: document.getElementById("game-logs"),
   chatMessages: document.getElementById("chat-messages"),
   board: document.getElementById("monopoly-board")
@@ -301,6 +303,7 @@ function renderLobby(data) {
   if (data.game_state) {
     renderBoard(data.game_state.board, data.players, data.game_state.current_player_index);
     renderCenterPanel(data);
+    renderOwnedProperties(data.players, playerId, data.game_state.board);
   } else {
     renderPregameBoard();
   }
@@ -341,6 +344,63 @@ function renderLogs(history) {
     entry.innerHTML = log;
     display.logs.appendChild(entry);
   });
+}
+
+function renderOwnedProperties(players, myPlayerId, board) {
+  const container = display.propertiesContainer;
+  container.innerHTML = "";
+
+  const myPlayer = players.find(p => p.id === myPlayerId);
+  if (!myPlayer) return;
+
+  // Find all spaces owned by me
+  const myProperties = board.filter(space => space.owner_id === myPlayerId);
+  const otherPlayers = players.filter(p => p.id !== myPlayerId);
+
+  // Create player map for quick lookup
+  const playerMap = players.reduce((map, p) => {
+    map.set(p.id, p);
+    return map;
+  }, new Map());
+
+  // Render empty state
+  if (myProperties.length === 0) {
+    container.innerHTML = `
+      <p style="text-align: center; color: var(--text-secondary); font-size: 0.9rem; padding: 20px;">
+        🏠 No properties owned yet
+      </p>
+    `;
+    return;
+  }
+
+  // Render each property
+  myProperties.forEach(space => {
+    const owner = playerMap.get(space.owner_id);
+    const isMine = owner.id === myPlayerId;
+    const ownerInfo = playerMap.get(space.owner_id);
+
+    const propertyItem = document.createElement("div");
+    propertyItem.className = `property-item ${isMine ? 'mine' : 'other'}`;
+
+    // Color coding by group
+    let colorClass = 'slate';
+    if (space.color_group) colorClass = space.color_group;
+
+    propertyItem.innerHTML = `
+      <div class="property-icon">🏘️</div>
+      <div class="property-type group-${colorClass}">${space.space_type || "property"}</div>
+      <div class="property-name">${space.name}</div>
+      <div class="property-price">$${space.price}</div>
+    `;
+
+    container.appendChild(propertyItem);
+  });
+
+  // Sort by price (optional)
+  container.lastElementChild?.parentNode?.insertBefore(
+    container.lastElementChild ?? document.createDocumentFragment(),
+    container.lastElementChild
+  );
 }
 
 function renderChatMessages(messages) {
