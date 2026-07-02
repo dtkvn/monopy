@@ -9,6 +9,13 @@ let lastDiceRoll = null;
 // Player Tokens config
 // const TOKENS = ["🎩", "🚗", "🐕", "🚢", "🦖", "💡", "🏎️", "🐈"];
 const TOKENS = ["🔴", "🟢", "🔵", "🟡", "🟣"]
+const TOKEN_COLORS = {
+  "🔴": "#ef4444", // Red
+  "🟢": "#10b981", // Green
+  "🔵": "#3b82f6", // Blue
+  "🟡": "#eab308", // Yellow
+  "🟣": "#a855f7"  // Purple
+};
 
 // DOM Elements
 const screens = {
@@ -373,6 +380,27 @@ function renderOwnedProperties(players, myPlayerId, board) {
     return;
   }
 
+  const boardContainer = document.querySelector(".properties-card");
+
+  boardContainer.addEventListener("click", (event) => {
+    // 1. Check if the click happened on or inside a .space div
+    const clickedSpace = event.target.closest(".property-item");
+
+    // 2. If it wasn't a space (e.g., clicking the board background), do nothing
+    if (!clickedSpace) return;
+
+    // 3. Get the index we stored earlier
+    const spaceIndex = parseInt(clickedSpace.dataset.index);
+
+    // 4. Find the matching data from your original Python-provided array
+    const spaceData = board.find(s => s.index === spaceIndex);
+
+    // 5. Trigger your modal
+    if (spaceData) {
+      showPropertyModal(spaceData);
+    }
+  });
+
   // Render each property
   myProperties.forEach(space => {
     const owner = playerMap.get(space.owner_id);
@@ -381,6 +409,7 @@ function renderOwnedProperties(players, myPlayerId, board) {
 
     const propertyItem = document.createElement("div");
     propertyItem.className = `property-item ${isMine ? 'mine' : 'other'}`;
+    propertyItem.dataset.index = space.index;
 
     // Color coding by group
     let colorClass = 'slate';
@@ -463,19 +492,50 @@ function renderBoard(spaces, players, currentPlayerIndex) {
     display.board.appendChild(centerPanel);
   }
 
+  const boardContainer = document.querySelector(".board");
+
+  boardContainer.addEventListener("click", (event) => {
+    // 1. Check if the click happened on or inside a .space div
+    const clickedSpace = event.target.closest(".space");
+
+    // 2. If it wasn't a space (e.g., clicking the board background), do nothing
+    if (!clickedSpace) return;
+
+    // 3. Get the index we stored earlier
+    const spaceIndex = parseInt(clickedSpace.dataset.index);
+
+    // 4. Find the matching data from your original Python-provided array
+    const spaceData = spaces.find(s => s.index === spaceIndex);
+
+    // 5. Trigger your modal
+    if (spaceData) {
+      showPropertyModal(spaceData);
+    }
+  });
+
   spaces.forEach(s => {
     const isCorner = s.index % 10 === 0;
     const spaceDiv = document.createElement("div");
     spaceDiv.className = `space space-${s.index} ${isCorner ? "corner" : ""}`;
+    spaceDiv.dataset.index = s.index;
 
     // Ownership styling
     if (s.owner_id) {
+      spaceDiv.classList.add("owned");
+
+      const owner = players.find(p => p.id === s.owner_id);
       const ownerIdx = players.findIndex(p => p.id === s.owner_id);
-      if (s.owner_id === playerId) {
-        spaceDiv.classList.add("owned-by-me");
-      } else {
-        spaceDiv.classList.add("owned-by-other");
-      }
+      const ownerEmoji = TOKENS[ownerIdx % TOKENS.length];
+      const ownerColor = TOKEN_COLORS[ownerEmoji];
+
+      spaceDiv.style.setProperty('--owner-color', ownerColor);
+
+      // const ownerIdx = players.findIndex(p => p.id === s.owner_id);
+      // if (s.owner_id === playerId) {
+      //   spaceDiv.classList.add("owned-by-me");
+      // } else {
+      //   spaceDiv.classList.add("owned-by-other");
+      // }
     }
 
     // Inside components
@@ -647,6 +707,93 @@ function showBuyModal(space) {
         <button id="btn-modal-pass" class="btn btn-secondary">Pass</button>
     `;
   modal.classList.remove("hide");
+}
+
+function showPropertyModal(space) {
+  modalTitle.textContent = "Property Information";
+
+  const type = space.space_type.replace("SpaceType.", "").toUpperCase();
+
+  let cardHeader = "";
+  let specificStats = "";
+
+  switch (type) {
+    case "PROPERTY":
+      cardHeader = `<div class="property-card-header" style="background-color: var(--group-${space.color_group || 'slate'});"></div>`;
+      specificStats = `
+                <div style="display: flex; justify-content: space-between;"><span>Base Rent:</span> <strong>$${space.rent[0]}</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span>With 1 House:</span> <strong>$${space.rent[1]}</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span>With 2 Houses:</span> <strong>$${space.rent[2]}</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span>With 3 Houses:</span> <strong>$${space.rent[3]}</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span>With 4 Houses:</span> <strong>$${space.rent[4]}</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span>With HOTEL:</span> <strong>$${space.rent[5]}</strong></div>
+            `;
+      break;
+
+    case "RAILROAD":
+      // Railroads don't have color groups, give them a slick generic dark header
+      cardHeader = `<div class="property-card-header" style="background-color: #374151; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;"><i class="fa-solid fa-train"></i></div>`;
+      specificStats = `
+                <div style="display: flex; justify-content: space-between;"><span>1 Railroad Owned:</span> <strong>$${space.rent[0]}</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span>2 Railroads Owned:</span> <strong>$${space.rent[1]}</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span>3 Railroads Owned:</span> <strong>$${space.rent[2]}</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span>4 Railroads Owned:</span> <strong>$${space.rent[3]}</strong></div>
+            `;
+      break;
+
+    case "UTILITY":
+      // Utilities also use a generic header layout
+      cardHeader = `<div class="property-card-header" style="background-color: #4b5563; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;"><i class="fa-solid fa-bolt"></i></div>`;
+      specificStats = `
+                <p style="font-size: 0.8rem; line-height: 1.4; color: var(--text-secondary); margin: 5px 0;">
+                    If <strong>one</strong> Utility is owned, rent is <strong>4x</strong> the amount shown on the dice.
+                </p>
+                <p style="font-size: 0.8rem; line-height: 1.4; color: var(--text-secondary); margin: 5px 0;">
+                    If <strong>both</strong> Utilities are owned, rent is <strong>10x</strong> the amount shown on the dice.
+                </p>
+            `;
+      break;
+
+    default:
+      // Fallback for non-purchasable tiles (Go, Chance, Jail, etc.) if clicked
+      cardHeader = `<div class="property-card-header" style="background-color: #111827;"></div>`;
+      specificStats = `<p style="text-align: center; color: var(--text-secondary);">Special board tile. Cannot be purchased.</p>`;
+      break;
+  }
+
+  modalBody.innerHTML = `
+        <div class="property-card-view">
+            ${cardHeader}
+            <div class="property-card-title" style="margin-top: 10px;">${space.name}</div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">${type}</div>
+            
+            ${space.price ? `<div class="property-card-price" style="margin-bottom: 12px; font-weight: bold;">Purchase Price: $${space.price}</div>` : ''}
+            
+            <div class="property-details" style="text-align: left; font-size: 0.9rem; display: flex; flex-direction: column; gap: 4px;">
+                ${specificStats}
+                
+                ${space.price ? `
+                    <hr style="margin: 8px 0; border: 0; border-top: 1px solid var(--text-secondary); opacity: 0.2;">
+                    <div style="display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 0.8rem;">
+                        <span>Mortgage Value:</span> <span>$${space.price / 2}</span>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+  // 3. Setup modal actions (Close Button)
+  modalActions.innerHTML = `
+        <button id="btn-modal-close" class="btn btn-secondary">Close</button>
+    `;
+
+  // 4. Reveal the modal
+  modal.classList.remove("hide");
+
+  // 5. Add event listener to the newly rendered close button
+  document.getElementById("btn-modal-close").addEventListener("click", () => {
+    modal.classList.add("hide");
+  });
 }
 
 function sendAction(action, extra = {}) {

@@ -567,11 +567,19 @@ body {
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  padding: 1px;
+  padding: 3px;
   font-size: 0.6rem;
   text-align: center;
   user-select: none;
   transition: background 0.3s ease;
+}
+
+.space:hover {
+  background-color: #303c4d;
+}
+
+.space.owned {
+  box-shadow: inset 0 0 0 2px var(--owner-color);
 }
 
 .space.owned-by-me {
@@ -620,11 +628,13 @@ body {
 /* Player Tokens Container inside space */
 .tokens-container {
   position: absolute;
-  bottom: 2px;
+  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
   display: flex;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
   gap: 2px;
   pointer-events: none;
@@ -632,7 +642,7 @@ body {
 }
 
 .token {
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
 }
@@ -1021,8 +1031,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
